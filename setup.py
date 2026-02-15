@@ -10,6 +10,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        ('share/imrc_progress_manager/launch', ['launch/progress_manager.launch.py'])
     ],
     install_requires=['setuptools'],
     zip_safe=True,

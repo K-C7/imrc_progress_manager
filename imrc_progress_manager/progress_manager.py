@@ -56,6 +56,7 @@ class ProgressManager(Node):
                 self.isOK = False
         elif(data == "NG"):
             self.miss[self.ball_color] = 0
+            self.isOK = False
         else:
             self.miss[self.ball_color] += 1
 
