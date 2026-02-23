@@ -1,6 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
+from std_srvs.srv import Empty
 
 from imrc_messages.msg import ConpanelBuzzerControl
 from imrc_messages.srv import ProgressInfo
@@ -11,6 +12,8 @@ class ProgressManager(Node):
         self.conpanel_miss_ball_sub = self.create_subscription(String, 'conpanel_miss_ball', self.conpanel_miss_ball_callback, 10)
         self.progress_info_srv = self.create_service(ProgressInfo, 'progress', self.progress_info_callback)
         self.conpanel_bz_pub = self.create_publisher(ConpanelBuzzerControl, 'conpanel_bz', 10)
+
+        self.miss_ball_reset_srv = self.create_service(Empty, "conpanel_reset_miss_ball", self.miss_ball_reset_callback)
         
         self.logger = self.get_logger()
 
@@ -20,6 +23,14 @@ class ProgressManager(Node):
         self.miss = [0, 0, 0]
 
         self.logger.info("Progress Manager node initialized.")
+    
+    def miss_ball_reset_callback(self, request, response):
+        self.logger.info("Reset miss ball count...")
+        self.miss[0] = 0
+        self.miss[1] = 0
+        self.miss[2] = 0
+
+        return response
 
     def conpanel_bz_feedback(self, num):
         self.logger.info("Publish buzzer signal \"{0}\"".format(num))
