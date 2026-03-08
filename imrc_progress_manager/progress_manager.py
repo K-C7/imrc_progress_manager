@@ -5,15 +5,21 @@ from std_srvs.srv import Empty
 
 from imrc_messages.msg import ConpanelBuzzerControl
 from imrc_messages.srv import ProgressInfo
+from imrc_messages.msg import MissBallInfo
+from imrc_messages.srv import ResetMissBall
 
 class ProgressManager(Node):
     def __init__(self):
         super().__init__('progress_manager')
         self.conpanel_miss_ball_sub = self.create_subscription(String, 'conpanel_miss_ball', self.conpanel_miss_ball_callback, 10)
         self.progress_info_srv = self.create_service(ProgressInfo, 'progress', self.progress_info_callback)
+
+        self.miss_ball_pub = self.create_publisher(MissBallInfo, 'miss_ball', 10)
+        self.miss_ball_tim = self.create_timer(1.0, self.publish_miss_ball)
+
         self.conpanel_bz_pub = self.create_publisher(ConpanelBuzzerControl, 'conpanel_bz', 10)
 
-        self.miss_ball_reset_srv = self.create_service(Empty, "conpanel_reset_miss_ball", self.miss_ball_reset_callback)
+        self.miss_ball_reset_srv = self.create_service(ResetMissBall, "reset_miss_ball", self.miss_ball_reset_callback)
         
         self.logger = self.get_logger()
 
@@ -24,11 +30,26 @@ class ProgressManager(Node):
 
         self.logger.info("Progress Manager node initialized.")
     
+    def publish_miss_ball(self):
+        mbi = MissBallInfo()
+        mbi.miss_red = self.miss[0]
+        mbi.miss_blue = self.miss[1]
+        mbi.miss_yellow = self.miss[2]
+
+        self.miss_ball_pub.publish(mbi)
+    
     def miss_ball_reset_callback(self, request, response):
-        self.logger.info("Reset miss ball count...")
-        self.miss[0] = 0
-        self.miss[1] = 0
-        self.miss[2] = 0
+        self.logger.info(f"Reset miss ball count. Color is: {0}", request.color)
+        if(request.color == "RED"):
+            self.miss[0] = 0
+        elif(request.color == "BLUE"):
+            self.miss[1] = 0
+        elif(request.color == "YELLOW"):
+            self.miss[2] = 0
+        else:
+            self.miss[0] = 0
+            self.miss[1] = 0
+            self.miss[2] = 0
 
         return response
 
