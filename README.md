@@ -39,3 +39,20 @@ ROS2 Topicを通じて各ノードへ配信します。
         ├── Status Publish
         ├── Phase Publish
         └── Ball Count Publish
+
+---
+
+## 使用技術
+
+* ROS2
+* 状態管理
+* Pub/Sub通信
+
+---
+
+## 用途
+
+* 機体全体状態の共有
+* 自動制御進行管理
+* 複数ノード間同期
+
